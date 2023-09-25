@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>VC Issuer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.3.5/dist/web3.min.js"></script>
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="title">HYU SBT</div>
+        <div class="menu">
+            <a href="#issueVC">Issue VC</a>
+            <a href="#viewVC">View VC</a>
+            <a href="#verifyVC">Verify VC</a>
+        </div>
+        <div id="walletInfo">
+            <div id="connectedAddress"></div>
+            <button id="walletButton">Connect Ethereum Wallet</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Main Content for Issue VC -->
+        <div class="main-content" id="issueVC">
+            <div class="left-section">
+                <h1>VC ISSUER</h1>
+                <form id="vcForm">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required>
+
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" id="dob" required>
+
+                    <label for="studentId">Student ID:</label>
+                    <input type="text" id="studentId" required>
+
+                    <label for="receiverAddress">Receiver Address:</label>
+                    <input type="text" id="receiverAddress" required>
+
+                    <button type="button" onclick="issueVC()">Issue VC</button>
+                </form>
+            </div>
+
+            <div class="right-section">
+                <h2>ISSUED VC</h2>
+                <textarea id="issuedVC" readonly></textarea>
+                <button id="downloadVC" onclick="downloadJSON()">Download VC</button>
+            </div>
+        </div>
+
+        <!-- Main Content for View VC -->
+        <div class="main-content" id="viewVCPage" style="display: none;">
+            <h1>View VC</h1>
+        </div>
+
+        <!-- Main Content for Verify VC -->
+        <div class="main-content" id="verifyVCPage" style="display: none;">
+            <h1>Verify VC</h1>
+        </div>
+    </div>
+</body>
+
+</html>

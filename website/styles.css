@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #333;
+    color: white;
+    overflow: hidden;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .title {
+    font-size: 24px;
+    padding-left: 80px;
+}
+
+.navbar .menu {
+    display: flex;
+    gap: 30px;
+    flex-grow: 1;
+}
+
+.navbar .menu a {
+    color: white;
+    text-decoration: none;
+    padding: 0 14px;
+}
+
+.navbar .menu a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+#walletInfo {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+#connectedAddress {
+    margin-right: 10px;
+    color: #fff; 
+    font-weight: bold; 
+    background-color: #888; /* 회색 배경 */
+    padding: 5px 10px; 
+    border-radius: 8px; 
+    display: inline-block; 
+    line-height: 1.5; /* 라인 높이 조정 */
+    vertical-align: middle; /* 버튼과 같은 높이에 위치시킴 */
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.left-section,
+.right-section {
+    flex: 1;
+    padding: 20px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+    vertical-align: middle; /* 버튼을 중간에 위치시킴 */
+}
+
+button:hover {
+    background-color: #555;
+}
+
+textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 10px;
+    resize: vertical;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label, input {
+    width: 100%;
+}

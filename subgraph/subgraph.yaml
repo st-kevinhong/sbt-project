@@ -1,0 +1,26 @@
+specVersion: 0.0.2
+description: A description of the subgraph
+repository: <GitHub repository (optional)>
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  - kind: ethereum/contract
+    name: SBTContract
+    network: goerli
+    source:
+      address: "0xf6B4f7398bce5274A17640Ab8D7464ED2512566D" # 배포한 컨트랙트 주소
+      abi: SBTContract # ABI 이름. 이 이름은 artifacts 디렉터리에 있는 ABI 파일 이름과 일치해야 합니다.
+      startBlock: 9812596 # 해당 컨트랙트가 배포된 블록 번호
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Proof
+      abis:
+        - name: SBTContract
+          file: ../contracts/SBTContract.json # ABI 파일 경로
+      eventHandlers:
+        - event: SBTMinted(address,address,string) # 컨트랙트의 이벤트
+          handler: handleSBTMinted # mapping.ts 파일에 정의된 함수 이름

@@ -100,16 +100,16 @@ function updateUI(isConnected) {
     }
 }
 
-function issueVC() {
+async function issueVC() {
     const receiverAddress = document.getElementById("receiverAddress").value;
     const userName = document.getElementById("name").value;
     const userDOB = document.getElementById("dob").value;
     const studentNumber = document.getElementById("studentId").value;
-    
-    // DID 자동 생성
-    const did = 'did:example:' + uuidv4();
 
-    const vc = {
+    // DID 자동 생성
+    const did = 'did:schoolVerify:' + uuidv4();
+
+    const vcPayload = {
         "@context": "https://www.w3.org/2018/credentials/v1",
         "id": did,
         "type": ["VerifiableCredential"],
@@ -123,10 +123,29 @@ function issueVC() {
         }
     };
 
-    // 이 부분에서 우측 textarea에 VC 출력
-    document.getElementById("issuedVC").value = JSON.stringify(vc, null, 4);
+    // 서명 생성을 위해 DID를 문자열로 변환
+    const message = web3.utils.sha3(JSON.stringify(vcPayload));
+    
+    try {
+        // 메시지에 서명
+        const signature = await web3.eth.personal.sign(message, accounts[0]);
+        // 서명한 메시지를 VC에 추가
+        vcPayload["proof"] = {
+            "type": "EcdsaSecp256k1Signature2019",
+            "created": new Date().toISOString(),
+            "proofPurpose": "assertionMethod",
+            "verificationMethod": accounts[0],
+            "jws": signature
+        };
+    } catch (error) {
+        console.error("Error signing the VC:", error);
+        return; // 서명 중 오류가 발생하면 함수 종료
+    }
 
-    const vcHash = web3.utils.sha3(JSON.stringify(vc));
+    // 이 부분에서 우측 textarea에 VC 출력
+    document.getElementById("issuedVC").value = JSON.stringify(vcPayload, null, 4);
+
+    const vcHash = web3.utils.sha3(JSON.stringify(vcPayload));
 
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     contract.methods.mint(receiverAddress, vcHash).send({ from: accounts[0] })
@@ -136,6 +155,26 @@ function issueVC() {
         .on('error', function(error){
             console.error("Error issuing VC", error);
         });
+}
+
+async function signVC(vcData, address) {
+    const vcString = JSON.stringify(vcData);
+    const hashedVC = web3.utils.sha3(vcString);
+
+    const signature = await web3.eth.personal.sign(hashedVC, address, ""); // 마지막 매개변수는 비밀번호입니다. MetaMask를 사용하는 경우 비밀번호는 필요하지 않습니다.
+
+    return signature;
+}
+
+function addSignatureToVC(vc, signature) {
+    vc["proof"] = {
+        "type": "EcdsaSecp256k1Signature",
+        "created": new Date().toISOString(),
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": accounts[0], // 현재 Ethereum 주소
+        "signature": signature
+    };
+    return vc;
 }
 
 function uuidv4() {
@@ -167,11 +206,61 @@ function showPage(pageId) {
             document.getElementById(id).style.display = 'block';
             // 여기에 로직을 추가
             if (id === 'viewVCPage') {
-                getRecentTransactions();
+                if (!accounts || accounts.length === 0) {
+                    alert("Please connect your Ethereum wallet first.");
+                    return;
+                }
+                const ownerAddress = accounts[0];
+                fetchSBTTokensByOwner(ownerAddress).then(tokens => {
+                    displaySBTTokens(tokens);
+                }).catch(error => {
+                    console.error("Error fetching SBT tokens:", error);
+                });
             }
         } else {
             document.getElementById(id).style.display = 'none';
         }
+    }
+}
+
+async function fetchSBTTokensByOwner(ownerAddress) {
+    const GRAPH_ENDPOINT = "https://api.thegraph.com/subgraphs/name/YOUR_SUBGRAPH_ID_HERE"; // 여기에 실제 Subgraph ID를 넣으세요.
+
+    const query = `
+        {
+            sbtTokens(where: { owner: "${ownerAddress}" }) {
+                did
+                proof
+            }
+        }
+    `;
+
+    const response = await fetch(GRAPH_ENDPOINT, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            query: query
+        })
+    });
+
+    const data = await response.json();
+    return data.data.sbtTokens;
+}
+
+function displaySBTTokens(tokens) {
+    const transactionsTableBody = document.querySelector("#transactionsTable tbody");
+    transactionsTableBody.innerHTML = ""; // 기존 행 삭제
+
+    for (const token of tokens) {
+        const row = transactionsTableBody.insertRow();
+
+        const didCell = row.insertCell(0);
+        didCell.textContent = token.did;
+
+        const proofCell = row.insertCell(1);
+        proofCell.textContent = token.proof;
     }
 }
 

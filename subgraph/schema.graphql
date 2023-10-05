@@ -1,0 +1,6 @@
+type SBTToken @entity {
+  id: ID!
+  owner: Address!
+  did: String!
+  proof: String!
+}

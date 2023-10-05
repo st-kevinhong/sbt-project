@@ -16,8 +16,9 @@ body {
 }
 
 .navbar .title {
-    font-size: 24px;
-    padding-left: 80px;
+    font-size: 28px;
+    padding-left: 60px;
+    margin-right: 40px;
 }
 
 .navbar .menu {
@@ -105,4 +106,43 @@ form {
 
 label, input {
     width: 100%;
+}
+
+#verifyVCPage input[type="text"],
+#verifyVCPage textarea {
+    width: 90%;
+    height: 10%; /* 여기서 길이를 조절했습니다. */
+    margin-bottom: 10px;
+    padding: 10px;  /* padding 추가하여 내용이 box 안에 꽉 차지 않도록 조정 */
+}
+
+#verifyVCPage #verifyButton {
+    margin-right: 10px; /* 버튼과 결과 메시지 사이의 간격 */
+}
+
+#verifyVCPage #verificationResult {
+    font-weight: bold;
+    color: green;
+    font-size: 24px;
+    vertical-align: middle; /* 버튼과 텍스트를 동일한 수직 위치에 맞춤 */
+}
+
+/*View VC 부분*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 8px 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
 }

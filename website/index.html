@@ -53,14 +53,28 @@
             </div>
         </div>
 
-        <!-- Main Content for View VC -->
         <div class="main-content" id="viewVCPage" style="display: none;">
             <h1>View VC</h1>
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>Hash</th>
+                        <th>Value (ETH)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 여기에 트랜잭션 데이터가 들어갑니다 -->
+                </tbody>
+            </table>
         </div>
 
         <!-- Main Content for Verify VC -->
         <div class="main-content" id="verifyVCPage" style="display: none;">
             <h1>Verify VC</h1>
+            <input type="text" id="contractAddress" placeholder="Enter Contract Address">
+            <textarea id="vpDocument" placeholder="Paste the VP document here"></textarea>
+            <button id="verifyButton" onclick="verifyVP()">Verify VP</button>
+            <span id="verificationResult"></span>
         </div>
     </div>
 </body>

@@ -1,5 +1,6 @@
 let accounts = [];
 let web3;
+const ETHERSCAN_API_KEY = 'YOUR_ETHERSCAN_API_KEY'; // Etherscan에서 받은 API 키
 
 async function connectEthereum() {
     if (!window.ethereum && !window.web3) {
@@ -7,7 +8,7 @@ async function connectEthereum() {
         updateUI(false);
         return;
     }
-    
+
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
 
@@ -37,12 +38,55 @@ async function connectEthereum() {
     }
 }
 
-function disconnectEthereum() {
-    accounts = [];  // Reset the accounts array
-    if(window.ethereum) {
-        window.ethereum.removeAllListeners();  // Ensure no more account change events are observed
+async function getRecentTransactions() {
+    if (!accounts || accounts.length === 0) {
+        alert("Please connect your Ethereum wallet first.");
+        return;
     }
-    updateUI(false);  // Update UI to show as disconnected
+
+    const address = accounts[0];
+    const ETHERSCAN_API_KEY = 'FVWM4RX3F3KXM5I72CS1BSKKE783M3MXD3'; // 이곳에 Etherscan API 키를 입력하세요.
+    const etherscanURL = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${ETHERSCAN_API_KEY}`;
+
+    try {
+        const response = await fetch(etherscanURL);
+        const data = await response.json();
+
+        if (data.status !== "1" || !data.result) {
+            throw new Error("Failed to fetch transactions.");
+        }
+
+        const transactions = data.result.slice(0, 10); // 최근 10개의 트랜잭션만 가져옵니다.
+
+        // UI에 트랜잭션 정보 표시 (예: 테이블 또는 리스트에 추가)
+        displayTransactions(transactions);
+
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+    }
+}
+
+function displayTransactions(transactions) {
+    const transactionsTableBody = document.querySelector("#transactionsTable tbody");
+    transactionsTableBody.innerHTML = ""; // 기존 행 삭제
+
+    for (const tx of transactions) {
+        const row = transactionsTableBody.insertRow();
+
+        const hashCell = row.insertCell(0);
+        hashCell.textContent = tx.hash;
+
+        const valueCell = row.insertCell(1);
+        valueCell.textContent = web3.utils.fromWei(tx.value, 'ether');
+    }
+}
+
+function disconnectEthereum() {
+    accounts = [];
+    if (window.ethereum) {
+        window.ethereum.removeAllListeners();
+    }
+    updateUI(false);
 }
 
 function updateUI(isConnected) {
@@ -121,10 +165,21 @@ function showPage(pageId) {
     for (let id of pages) {
         if (id === pageId) {
             document.getElementById(id).style.display = 'block';
+            // 여기에 로직을 추가
+            if (id === 'viewVCPage') {
+                getRecentTransactions();
+            }
         } else {
             document.getElementById(id).style.display = 'none';
         }
     }
+}
+
+function verifyVP() {
+    // TODO: Add actual verification logic here
+
+    // For this example, we'll simply display "Verified!"
+    document.getElementById("verificationResult").textContent = "Verified!";
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -142,6 +197,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     document.getElementById("vcForm").querySelector("button").addEventListener("click", issueVC);
+
+    document.getElementById("viewVCPage").addEventListener("load", getRecentTransactions);
 
     document.querySelector(".menu").addEventListener("click", function(event) {
         if (event.target.tagName === "A") {

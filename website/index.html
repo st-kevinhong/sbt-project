@@ -16,7 +16,8 @@
         <div class="menu">
             <a href="#issueVC">Issue VC</a>
             <a href="#viewVC">View VC</a>
-            <a href="#verifyVC">Verify VC</a>
+            <a href="#createVP">Make VP</a>
+            <a href="#verifyVP">Verify VP</a>
         </div>
         <div id="walletInfo">
             <div id="connectedAddress"></div>
@@ -68,8 +69,27 @@
             </table>
         </div>
 
+        <div class="main-content" id="createVPPage" style="display: none;">
+            <div class="left-section">
+                <h1>UPLOAD VC</h1>
+                <form id="vpForm">
+                    <label for="receiverAddress">Holder Address:</label>
+                    <input type="text" id="holderAddress" required>
+
+                    <input type="file" name="file" id="jsonFileInput" accept=".json">
+                    <button type="button" onclick="createVP()">Upload</button>
+                    <button id="downloadButton" style="display: none;">Download</button>
+                </form>
+
+            </div>
+            <!-- <div class="right-section">
+                <h2>ISSUED VP</h2>
+                <textarea id="issuedVC" readonly></textarea>
+                <button id="downloadVC" onclick="downloadJSON()">Download VC</button>
+            </div> -->
+        </div>
         <!-- Main Content for Verify VC -->
-        <div class="main-content" id="verifyVCPage" style="display: none;">
+        <div class="main-content" id="verifyVPPage" style="display: none;">
             <h1>Verify VC</h1>
             <input type="text" id="contractAddress" placeholder="Enter Contract Address">
             <textarea id="vpDocument" placeholder="Paste the VP document here"></textarea>

@@ -15,7 +15,7 @@
         <div class="title">HYU SBT</div>
         <div class="menu">
             <a href="#issueVC">Issue VC</a>
-            <a href="#viewVC">View VC</a>
+            <a href="#register">Register</a>
             <a href="#createVP">Make VP</a>
             <a href="#verifyVP">Verify VP</a>
         </div>
@@ -54,19 +54,15 @@
             </div>
         </div>
 
-        <div class="main-content" id="viewVCPage" style="display: none;">
-            <h1>View VC</h1>
-            <table id="transactionsTable">
-                <thead>
-                    <tr>
-                        <th>Hash</th>
-                        <th>Value (ETH)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 여기에 트랜잭션 데이터가 들어갑니다 -->
-                </tbody>
-            </table>
+        <div class="main-content" id="registerPage" style="display: none;">
+            <h1>Register</h1>
+            <h3>Register Org</h3>
+            <input type="text" id="orgName" placeholder="Enter Organization Name">
+            <button id="orgButton" onclick="registerOrg()">Register Org</button>
+            <h3>Blacklist DID</h3>
+            <input type="text" id="blacklistedDID" placeholder="Enter DID Address">
+            <button id="banButton" onclick="banDID()">Ban DID</button>
+
         </div>
 
         <div class="main-content" id="createVPPage" style="display: none;">
@@ -82,19 +78,26 @@
                 </form>
 
             </div>
-            <!-- <div class="right-section">
-                <h2>ISSUED VP</h2>
-                <textarea id="issuedVC" readonly></textarea>
-                <button id="downloadVC" onclick="downloadJSON()">Download VC</button>
-            </div> -->
         </div>
-        <!-- Main Content for Verify VC -->
+        <!-- Main Content for Verify -->
         <div class="main-content" id="verifyVPPage" style="display: none;">
-            <h1>Verify VC</h1>
-            <input type="text" id="contractAddress" placeholder="Enter Contract Address">
-            <textarea id="vpDocument" placeholder="Paste the VP document here"></textarea>
-            <button id="verifyButton" onclick="verifyVP()">Verify VP</button>
-            <span id="verificationResult"></span>
+            <h1>Verify VP</h1>
+            <textarea id="orgName" placeholder="Enter Received VP"></textarea>
+            <button id="verifyOrgButton" onclick="verifyOrg()">Verify Org</button>
+            <button id="banButton" onclick="verifyDID()">Verify Blacklisted</button>
+            <span id="banResult"></span>
+            <div id="orgName"></div>
+            <table id="banResult" border="1">
+                <thead>
+                    <tr>
+                        <th>DID</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be added dynamically here -->
+                </tbody>
+            </table>
         </div>
     </div>
 </body>

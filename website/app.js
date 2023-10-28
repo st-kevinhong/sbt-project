@@ -40,50 +40,6 @@ async function connectEthereum() {
   }
 }
 
-async function getRecentTransactions() {
-  if (!accounts || accounts.length === 0) {
-    alert("Please connect your Ethereum wallet first.");
-    return;
-  }
-
-  const address = accounts[0];
-  const ETHERSCAN_API_KEY = "FVWM4RX3F3KXM5I72CS1BSKKE783M3MXD3"; // 이곳에 Etherscan API 키를 입력하세요.
-  const etherscanURL = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${ETHERSCAN_API_KEY}`;
-
-  try {
-    const response = await fetch(etherscanURL);
-    const data = await response.json();
-
-    if (data.status !== "1" || !data.result) {
-      throw new Error("Failed to fetch transactions.");
-    }
-
-    const transactions = data.result.slice(0, 10); // 최근 10개의 트랜잭션만 가져옵니다.
-
-    // UI에 트랜잭션 정보 표시 (예: 테이블 또는 리스트에 추가)
-    displayTransactions(transactions);
-  } catch (error) {
-    console.error("Error fetching transactions:", error);
-  }
-}
-
-function displayTransactions(transactions) {
-  const transactionsTableBody = document.querySelector(
-    "#transactionsTable tbody"
-  );
-  transactionsTableBody.innerHTML = ""; // 기존 행 삭제
-
-  for (const tx of transactions) {
-    const row = transactionsTableBody.insertRow();
-
-    const hashCell = row.insertCell(0);
-    hashCell.textContent = tx.hash;
-
-    const valueCell = row.insertCell(1);
-    valueCell.textContent = web3.utils.fromWei(tx.value, "ether");
-  }
-}
-
 function disconnectEthereum() {
   accounts = [];
   if (window.ethereum) {
@@ -241,7 +197,7 @@ async function signVC(vcData, address) {
   const vcString = JSON.stringify(vcData);
   const hashedVC = web3.utils.sha3(vcString);
 
-  const signature = await web3.eth.personal.sign(hashedVC, address, ""); // 마지막 매개변수는 비밀번호입니다. MetaMask를 사용하는 경우 비밀번호는 필요하지 않습니다.
+  const signature = await web3.eth.personal.sign(hashedVC, address, ""); // 마지막 매개변수는 비밀번호: MetaMask에선 불필요
 
   return signature;
 }
@@ -295,12 +251,12 @@ function downloadVP(data, filename) {
 }
 
 function showPage(pageId) {
-  const pages = ["issueVC", "viewVCPage", "verifyVPPage", "createVPPage"];
+  const pages = ["issueVC", "registerPage", "verifyVPPage", "createVPPage"];
   for (let id of pages) {
     if (id === pageId) {
       document.getElementById(id).style.display = "block";
       // 여기에 로직을 추가
-      if (id === "viewVCPage") {
+      if (id === "register") {
         if (!accounts || accounts.length === 0) {
           alert("Please connect your Ethereum wallet first.");
           return;
@@ -371,6 +327,22 @@ function verifyVP() {
   document.getElementById("verificationResult").textContent = "Verified!";
 }
 
+function verifyOrg() {
+  try {
+    // For now, we're using dummy data. Later, you'll make actual calls to your smart contract here.
+    const orgName = "Hanyang University";
+
+    // This part is where you will interact with the smart contract (commented out for now).
+    // const contract = new web3.eth.Contract(contractABI, contractAddress);
+    // const orgName = await contract.methods.getOrganizationName().call();
+
+    // Update the UI with the organization's name
+    document.getElementById("orgName").textContent = "Issued by " + orgName;
+  } catch (error) {
+    console.error("An error occurred while fetching the organization name:", error);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("walletButton")
@@ -395,8 +367,9 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("click", issueVC);
 
   document
-    .getElementById("viewVCPage")
-    .addEventListener("load", getRecentTransactions);
+    .getElementById("registerPage");
+    // .addEventListener("load", getRecentTransactions);
+  
 
   document.querySelector(".menu").addEventListener("click", function (event) {
     if (event.target.tagName === "A") {
@@ -410,4 +383,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  document.getElementById("verifyOrgButton").addEventListener("click", function(event) {
+    event.preventDefault();  // Prevents the default action for the click event
+    verifyOrg();  // Calls your new function when the button is clicked
+  });
+
 });

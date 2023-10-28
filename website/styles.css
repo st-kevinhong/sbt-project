@@ -48,12 +48,12 @@ body {
     margin-right: 10px;
     color: #fff; 
     font-weight: bold; 
-    background-color: #888; /* 회색 배경 */
+    background-color: #888;
     padding: 5px 10px; 
     border-radius: 8px; 
     display: inline-block; 
-    line-height: 1.5; /* 라인 높이 조정 */
-    vertical-align: middle; /* 버튼과 같은 높이에 위치시킴 */
+    line-height: 1.5;
+    vertical-align: middle;
 }
 
 .container {
@@ -84,7 +84,7 @@ button {
     background-color: #333;
     color: white;
     cursor: pointer;
-    vertical-align: middle; /* 버튼을 중간에 위치시킴 */
+    vertical-align: middle;
 }
 
 button:hover {
@@ -111,23 +111,23 @@ label, input {
 #verifyVCPage input[type="text"],
 #verifyVCPage textarea {
     width: 90%;
-    height: 10%; /* 여기서 길이를 조절했습니다. */
+    height: 10%;
     margin-bottom: 10px;
-    padding: 10px;  /* padding 추가하여 내용이 box 안에 꽉 차지 않도록 조정 */
+    padding: 10px;
 }
 
 #verifyVCPage #verifyButton {
-    margin-right: 10px; /* 버튼과 결과 메시지 사이의 간격 */
+    margin-right: 10px;
 }
 
 #verifyVCPage #verificationResult {
     font-weight: bold;
     color: green;
     font-size: 24px;
-    vertical-align: middle; /* 버튼과 텍스트를 동일한 수직 위치에 맞춤 */
+    vertical-align: middle;
 }
 
-/*View VC 부분*/
+/* Styles for the table in the Register VC section, if you still have tables */
 table {
     width: 100%;
     border-collapse: collapse;

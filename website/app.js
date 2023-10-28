@@ -237,25 +237,25 @@ async function createVP() {
   reader.readAsText(uploadedFile);
 }
 
-async function signVC(vcData, address) {
-  const vcString = JSON.stringify(vcData);
-  const hashedVC = web3.utils.sha3(vcString);
+// async function signVC(vcData, address) {
+//   const vcString = JSON.stringify(vcData);
+//   const hashedVC = web3.utils.sha3(vcString);
 
-  const signature = await web3.eth.personal.sign(hashedVC, address, ""); // 마지막 매개변수는 비밀번호입니다. MetaMask를 사용하는 경우 비밀번호는 필요하지 않습니다.
+//   const signature = await web3.eth.personal.sign(hashedVC, address, ""); // 마지막 매개변수는 비밀번호입니다. MetaMask를 사용하는 경우 비밀번호는 필요하지 않습니다.
 
-  return signature;
-}
+//   return signature;
+// }
 
-function addSignatureToVC(vc, signature) {
-  vc["proof"] = {
-    type: "EcdsaSecp256k1Signature",
-    created: new Date().toISOString(),
-    proofPurpose: "assertionMethod",
-    verificationMethod: accounts[0], // 현재 Ethereum 주소
-    signature: signature,
-  };
-  return vc;
-}
+// function addSignatureToVC(vc, signature) {
+//   vc["proof"] = {
+//     type: "EcdsaSecp256k1Signature",
+//     created: new Date().toISOString(),
+//     proofPurpose: "assertionMethod",
+//     verificationMethod: accounts[0], // 현재 Ethereum 주소
+//     signature: signature,
+//   };
+//   return vc;
+// }
 
 function uuidv4() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -280,19 +280,19 @@ function downloadJSON() {
   window.URL.revokeObjectURL(url);
 }
 //아래,위 함수 합칠 예정
-function downloadVP(data, filename) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-  document.body.removeChild(a);
-}
+// function downloadVP(data, filename) {
+//   const blob = new Blob([JSON.stringify(data, null, 2)], {
+//     type: "application/json",
+//   });
+//   const url = URL.createObjectURL(blob);
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = filename;
+//   document.body.appendChild(a);
+//   a.click();
+//   window.URL.revokeObjectURL(url);
+//   document.body.removeChild(a);
+// }
 
 function showPage(pageId) {
   const pages = ["issueVC", "viewVCPage", "verifyVPPage", "createVPPage"];

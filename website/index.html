@@ -82,11 +82,10 @@
         <!-- Main Content for Verify -->
         <div class="main-content" id="verifyVPPage" style="display: none;">
             <h1>Verify VP</h1>
-            <textarea id="orgName" placeholder="Enter Received VP"></textarea>
+            <textarea id="vpTextArea" placeholder="Enter Received VP"></textarea>
             <button id="verifyOrgButton" onclick="verifyOrg()">Verify Org</button>
-            <button id="banButton" onclick="verifyDID()">Verify Blacklisted</button>
-            <span id="banResult"></span>
-            <div id="orgName"></div>
+            <button id="banButton" onclick="verifyBlacklisted()">Verify Blacklisted</button>
+            <p>Issued By: <div id="orgVerificationResult"></div></p>
             <table id="banResult" border="1">
                 <thead>
                     <tr>

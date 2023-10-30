@@ -146,3 +146,12 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+.valid-status {
+    color: green;
+}
+  
+.invalid-status {
+    color: red;
+}
+  

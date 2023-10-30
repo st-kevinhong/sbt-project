@@ -215,7 +215,7 @@ async function createVP() {
         const downloadButton = document.getElementById("downloadButton");
         downloadButton.style.display = "block";
         downloadButton.addEventListener("click", () => {
-          const vpJSONBlob = new Blob([JSON.stringify(vpPayload)], {
+          const vpJSONBlob = new Blob([JSON.stringify(vpPayload, null, 4)], {
             type: "application/json",
           });
           const a = document.createElement("a");

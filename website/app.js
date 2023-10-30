@@ -316,7 +316,7 @@ function displaySBTTokens(tokens) {
 function registerOrg() {
   try {
     // Step 1: Get the organization name and wallet address from the user input
-    const orgNameInput = document.getElementById('orgName');
+    const orgNameInput = document.getElementById("orgName");
     const orgName = orgNameInput.value.trim();
 
     // Assuming the wallet address is available in a similar manner
@@ -324,17 +324,17 @@ function registerOrg() {
     const walletAddress = accounts[0]; // Or however you retrieve the current user's wallet address
 
     if (!orgName) {
-      alert('Please enter the organization name.');
+      alert("Please enter the organization name.");
       return;
     }
 
     if (!walletAddress) {
-      alert('No wallet address available. Please make sure you are logged in.');
+      alert("No wallet address available. Please make sure you are logged in.");
       return;
     }
 
     // Step 2: Retrieve the existing organizations from localStorage
-    const allOrgsStr = localStorage.getItem('orgInfo');
+    const allOrgsStr = localStorage.getItem("orgInfo");
     let allOrgs = [];
     if (allOrgsStr) {
       const parsedOrgs = JSON.parse(allOrgsStr);
@@ -342,7 +342,10 @@ function registerOrg() {
       if (Array.isArray(parsedOrgs[0])) {
         allOrgs = parsedOrgs;
       } else {
-        console.error('Unexpected data found in orgInfo, expected an array.', parsedOrgs);
+        console.error(
+          "Unexpected data found in orgInfo, expected an array.",
+          parsedOrgs
+        );
         // Handle or report this issue as appropriate in your application
       }
     }
@@ -357,7 +360,7 @@ function registerOrg() {
     }
 
     if (orgExists) {
-      alert('This organization is already registered.');
+      alert("This organization is already registered.");
       return;
     }
 
@@ -371,13 +374,13 @@ function registerOrg() {
     allOrgs.push(newOrg);
 
     // Step 4: Save the updated organizations list back to localStorage
-    localStorage.setItem('orgInfo', JSON.stringify(allOrgs));
+    localStorage.setItem("orgInfo", JSON.stringify(allOrgs));
 
-    alert('Organization registered successfully!');
-    orgNameInput.value = ''; // Clear the input field after successful registration
+    alert("Organization registered successfully!");
+    orgNameInput.value = ""; // Clear the input field after successful registration
   } catch (error) {
-    console.error('An error occurred during the registration process', error);
-    alert('Could not register the organization due to an unexpected error.');
+    console.error("An error occurred during the registration process", error);
+    alert("Could not register the organization due to an unexpected error.");
   }
 }
 
@@ -389,65 +392,69 @@ function verifyVP() {
 }
 
 function verifyOrg() {
-  try {
-    // Step 1: Parse the VP from the text area
-    const vpTextArea = document.getElementById('vpTextArea'); // make sure the ID is correct based on your actual HTML
-    const vpText = vpTextArea.value;
-
-    // Attempt to parse the text area content as JSON
-    let vp;
+  const jsonFileInput = document.getElementById("verifyInput");
+  const vpFile = jsonFileInput.files[0];
+  // console.log(uploadedFile);
+  const reader = new FileReader();
+  reader.onload = function (e) {
     try {
-      vp = JSON.parse(vpText);
+      // Step 1: Parse the VP from the JSON file
+      const vp = JSON.parse(e.target.result);
+      // console.log(vp);
+      try {
+        // Extract the 'issuer' from the VP. This may vary based on the structure of your VP
+        const issuerAddress = vp.verifiableCredential[0].issuer; // adjust based on your actual VP structure
+
+        if (!issuerAddress) {
+          alert("No issuer found in the VP.");
+          return;
+        }
+
+        // Step 2: Query the local database (using localStorage in this example)
+        const orgInfoStr = localStorage.getItem("orgInfo");
+        const orgInfo = JSON.parse(orgInfoStr);
+
+        // Step 3: Display the result
+        const resultDisplay = document.getElementById("orgVerificationResult");
+
+        if (orgInfo && orgInfo.address === issuerAddress) {
+          // If the issuer exists, display the organization's name
+          resultDisplay.textContent = `Organization: ${orgInfo.organization}`;
+        } else {
+          // If the issuer does not exist, display 'NONE'
+          resultDisplay.textContent = "NONE";
+        }
+      } catch (error) {
+        console.error(
+          "An error occurred during the verification process",
+          error
+        );
+        alert("Could not verify the organization. See console for error.");
+      }
     } catch (error) {
-      alert('Invalid VP. Please enter a valid JSON.');
-      return;
+      alert("Error parsing JSON file: " + error.message);
     }
-
-    // Extract the 'issuer' from the VP. This may vary based on the structure of your VP
-    const issuerAddress = vp.verifiableCredential[0].issuer; // adjust based on your actual VP structure
-
-    if (!issuerAddress) {
-      alert('No issuer found in the VP.');
-      return;
-    }
-
-    // Step 2: Query the local database (using localStorage in this example)
-    const orgInfoStr = localStorage.getItem('orgInfo');
-    const orgInfo = JSON.parse(orgInfoStr);
-
-    // Step 3: Display the result
-    const resultDisplay = document.getElementById('orgVerificationResult');
-
-    if (orgInfo && orgInfo.address === issuerAddress) {
-      // If the issuer exists, display the organization's name
-      resultDisplay.textContent = `Organization: ${orgInfo.organization}`;
-    } else {
-      // If the issuer does not exist, display 'NONE'
-      resultDisplay.textContent = 'NONE';
-    }
-  } catch (error) {
-    console.error('An error occurred during the verification process', error);
-    alert('Could not verify the organization. See console for error.');
-  }
+  };
+  reader.readAsText(vpFile);
 }
 
 function banDID() {
   try {
-    const didInput = document.getElementById('blacklistedDID');
+    const didInput = document.getElementById("blacklistedDID");
     const did = didInput.value.trim();
 
     if (!did) {
-      alert('Please enter a DID.');
+      alert("Please enter a DID.");
       return;
     }
 
     // Retrieve the existing blacklist from localStorage
-    const blacklistStr = localStorage.getItem('blacklist');
+    const blacklistStr = localStorage.getItem("blacklist");
     const blacklist = blacklistStr ? JSON.parse(blacklistStr) : [];
 
     // Check if the DID is already blacklisted
     if (blacklist.includes(did)) {
-      alert('This DID is already blacklisted.');
+      alert("This DID is already blacklisted.");
       return;
     }
 
@@ -455,13 +462,13 @@ function banDID() {
     blacklist.push(did);
 
     // Save the updated blacklist to localStorage
-    localStorage.setItem('blacklist', JSON.stringify(blacklist));
+    localStorage.setItem("blacklist", JSON.stringify(blacklist));
 
-    alert('DID successfully blacklisted!');
-    didInput.value = ''; // Clear the input field after successful action
+    alert("DID successfully blacklisted!");
+    didInput.value = ""; // Clear the input field after successful action
   } catch (error) {
-    console.error('Error blacklisting DID: ', error);
-    alert('Could not blacklist the DID due to an unexpected error.');
+    console.error("Error blacklisting DID: ", error);
+    alert("Could not blacklist the DID due to an unexpected error.");
   }
 }
 
@@ -469,70 +476,72 @@ function banDID() {
 let lastVerifiedDID = "";
 
 function verifyBlacklisted() {
-  try {
-    // Parse the VP from the text area
-    const vpTextArea = document.getElementById('vpTextArea');
-    const vpText = vpTextArea.value;
+  const jsonFileInput = document.getElementById("verifyInput");
 
-    let vp;
+  const uploadedFile = jsonFileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
     try {
-      vp = JSON.parse(vpText);
+      try {
+        // Step 1: Parse the VP from the JSON file
+        const vp = JSON.parse(e.target.result);
+
+        // Extract the 'id' from the VP
+        const did = vp.verifiableCredential[0].id;
+
+        if (!did) {
+          alert("No DID found in the VP.");
+          return;
+        }
+
+        // If the DID is the same as the last verified, don't proceed
+        if (did === lastVerifiedDID) {
+          console.log("Same DID as the last one verified. No new data to add.");
+          return;
+        }
+
+        // Update the last verified DID
+        lastVerifiedDID = did;
+
+        // Retrieve the blacklist from localStorage
+        const blacklistStr = localStorage.getItem("blacklist");
+        const blacklist = blacklistStr ? JSON.parse(blacklistStr) : [];
+
+        // Check if the DID is in the blacklist
+        const isBlacklisted = blacklist.includes(did);
+
+        // Reference the table and its body
+        const tableRef = document.getElementById("banResult");
+        const tbodyRef = tableRef.getElementsByTagName("tbody")[0];
+
+        // Insert a row at the end of the table
+        const newRow = tbodyRef.insertRow();
+
+        // Insert cells in the row
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+
+        // Append the text content
+        cell1.textContent = did;
+        cell2.textContent = isBlacklisted ? "Invalid" : "Valid";
+
+        // Optionally add style or class to the 'Invalid'/'Valid' text for better visualization
+        if (isBlacklisted) {
+          cell2.classList.add("invalid-status"); // Define the 'invalid-status' class in your CSS
+        } else {
+          cell2.classList.add("valid-status"); // Define the 'valid-status' class in your CSS
+        }
+      } catch (error) {
+        console.error("Error verifying DID: ", error);
+        alert("Could not verify the DID due to an unexpected error.");
+      }
     } catch (error) {
-      alert('Invalid VP. Please enter a valid JSON.');
-      return;
+      alert("Error parsing JSON file: " + error.message);
     }
-
-    // Extract the 'id' from the VP
-    const did = vp.verifiableCredential[0].id;
-
-    if (!did) {
-      alert('No DID found in the VP.');
-      return;
-    }
-
-    // If the DID is the same as the last verified, don't proceed
-    if (did === lastVerifiedDID) {
-      console.log('Same DID as the last one verified. No new data to add.');
-      return;
-    }
-
-    // Update the last verified DID
-    lastVerifiedDID = did;
-
-    // Retrieve the blacklist from localStorage
-    const blacklistStr = localStorage.getItem('blacklist');
-    const blacklist = blacklistStr ? JSON.parse(blacklistStr) : [];
-
-    // Check if the DID is in the blacklist
-    const isBlacklisted = blacklist.includes(did);
-
-    // Reference the table and its body
-    const tableRef = document.getElementById('banResult');
-    const tbodyRef = tableRef.getElementsByTagName('tbody')[0];
-
-    // Insert a row at the end of the table
-    const newRow = tbodyRef.insertRow();
-
-    // Insert cells in the row
-    const cell1 = newRow.insertCell(0);
-    const cell2 = newRow.insertCell(1);
-
-    // Append the text content
-    cell1.textContent = did;
-    cell2.textContent = isBlacklisted ? 'Invalid' : 'Valid';
-
-    // Optionally add style or class to the 'Invalid'/'Valid' text for better visualization
-    if (isBlacklisted) {
-      cell2.classList.add('invalid-status'); // Define the 'invalid-status' class in your CSS
-    } else {
-      cell2.classList.add('valid-status'); // Define the 'valid-status' class in your CSS
-    }
-  } catch (error) {
-    console.error('Error verifying DID: ', error);
-    alert('Could not verify the DID due to an unexpected error.');
-  }
+  };
+  reader.readAsText(uploadedFile);
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
   document
@@ -557,10 +566,8 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelector("button")
     .addEventListener("click", issueVC);
 
-  document
-    .getElementById("registerPage");
-    // .addEventListener("load", getRecentTransactions);
-  
+  document.getElementById("registerPage");
+  // .addEventListener("load", getRecentTransactions);
 
   document.querySelector(".menu").addEventListener("click", function (event) {
     if (event.target.tagName === "A") {

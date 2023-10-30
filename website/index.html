@@ -82,10 +82,14 @@
         <!-- Main Content for Verify -->
         <div class="main-content" id="verifyVPPage" style="display: none;">
             <h1>Verify VP</h1>
-            <textarea id="vpTextArea" placeholder="Enter Received VP"></textarea>
+            <input type="file" name="file" id="verifyInput" accept=".json">
+            <!-- <button type="button" onclick="createVP()">Upload</button> -->
+            <!-- <textarea id="vpTextArea" placeholder="Enter Received VP"></textarea> -->
             <button id="verifyOrgButton" onclick="verifyOrg()">Verify Org</button>
             <button id="banButton" onclick="verifyBlacklisted()">Verify Blacklisted</button>
-            <p>Issued By: <div id="orgVerificationResult"></div></p>
+            <p>Issued By:
+            <div id="orgVerificationResult"></div>
+            </p>
             <table id="banResult" border="1">
                 <thead>
                     <tr>

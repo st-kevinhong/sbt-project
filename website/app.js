@@ -1,6 +1,5 @@
 let accounts = [];
 let web3;
-const ETHERSCAN_API_KEY = "YOUR_ETHERSCAN_API_KEY"; // Etherscan에서 받은 API 키
 
 async function connectEthereum() {
   if (!window.ethereum && !window.web3) {
@@ -125,6 +124,29 @@ async function issueVC() {
     });
 }
 
+function uuidv4() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function downloadJSON() {
+  const data = document.getElementById("issuedVC").value;
+  const blob = new Blob([data], { type: "application/json" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.style.display = "none";
+  a.href = url;
+  a.download = "VC.json";
+
+  document.body.appendChild(a);
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+}
+
 async function createVP() {
   const jsonFileInput = document.getElementById("jsonFileInput");
   const holderAddress = document.getElementById("holderAddress").value;
@@ -154,19 +176,6 @@ async function createVP() {
           jws: signature,
         };
 
-        // const vpHash = web3.utils.sha3(JSON.stringify(vpPayload));
-
-        // const contract = new web3.eth.Contract(contractABI, contractAddress);
-        // contract.methods
-        //   .mint(holderAddress, vpHash)
-        //   .send({ from: accounts[0] })
-        //   .on("receipt", function (receipt) {
-        //     console.log("VP created successfully!", receipt);
-        //   })
-        //   .on("error", function (error) {
-        //     console.error("Error issuing VP", error);
-        //   });
-
         // 다운로드
         const downloadButton = document.getElementById("downloadButton");
         downloadButton.style.display = "block";
@@ -191,126 +200,6 @@ async function createVP() {
   };
 
   reader.readAsText(uploadedFile);
-}
-
-async function signVC(vcData, address) {
-  const vcString = JSON.stringify(vcData);
-  const hashedVC = web3.utils.sha3(vcString);
-
-  const signature = await web3.eth.personal.sign(hashedVC, address, ""); // 마지막 매개변수는 비밀번호: MetaMask에선 불필요
-
-  return signature;
-}
-
-function addSignatureToVC(vc, signature) {
-  vc["proof"] = {
-    type: "EcdsaSecp256k1Signature",
-    created: new Date().toISOString(),
-    proofPurpose: "assertionMethod",
-    verificationMethod: accounts[0], // 현재 Ethereum 주소
-    signature: signature,
-  };
-  return vc;
-}
-
-function uuidv4() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
-function downloadJSON() {
-  const data = document.getElementById("issuedVC").value;
-  const blob = new Blob([data], { type: "application/json" });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.style.display = "none";
-  a.href = url;
-  a.download = "VC.json";
-
-  document.body.appendChild(a);
-  a.click();
-
-  window.URL.revokeObjectURL(url);
-}
-//아래,위 함수 합칠 예정
-function downloadVP(data, filename) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-  document.body.removeChild(a);
-}
-
-function showPage(pageId) {
-  const pages = ["issueVC", "registerPage", "verifyVPPage", "createVPPage"];
-  for (let id of pages) {
-    if (id === pageId) {
-      document.getElementById(id).style.display = "block";
-      // 여기에 로직을 추가
-      if (id === "register") {
-        if (!accounts || accounts.length === 0) {
-          alert("Please connect your Ethereum wallet first.");
-          return;
-        }
-        const ownerAddress = accounts[0];
-      }
-    } else {
-      document.getElementById(id).style.display = "none";
-    }
-  }
-}
-
-async function fetchSBTTokensByOwner(ownerAddress) {
-  const GRAPH_ENDPOINT =
-    "https://api.thegraph.com/subgraphs/name/YOUR_SUBGRAPH_ID_HERE"; // 여기에 실제 Subgraph ID를 넣으세요.
-
-  const query = `
-        {
-            sbtTokens(where: { owner: "${ownerAddress}" }) {
-                did
-                proof
-            }
-        }
-    `;
-
-  const response = await fetch(GRAPH_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: query,
-    }),
-  });
-
-  const data = await response.json();
-  return data.data.sbtTokens;
-}
-
-function displaySBTTokens(tokens) {
-  const transactionsTableBody = document.querySelector(
-    "#transactionsTable tbody"
-  );
-  transactionsTableBody.innerHTML = ""; // 기존 행 삭제
-
-  for (const token of tokens) {
-    const row = transactionsTableBody.insertRow();
-
-    const didCell = row.insertCell(0);
-    didCell.textContent = token.did;
-
-    const proofCell = row.insertCell(1);
-    proofCell.textContent = token.proof;
-  }
 }
 
 function registerOrg() {
@@ -384,23 +273,14 @@ function registerOrg() {
   }
 }
 
-function verifyVP() {
-  // TODO: Add actual verification logic here
-
-  // For this example, we'll simply display "Verified!"
-  document.getElementById("verificationResult").textContent = "Verified!";
-}
-
 function verifyOrg() {
   const jsonFileInput = document.getElementById("verifyInput");
   const vpFile = jsonFileInput.files[0];
-  // console.log(uploadedFile);
   const reader = new FileReader();
   reader.onload = function (e) {
     try {
       // Step 1: Parse the VP from the JSON file
       const vp = JSON.parse(e.target.result);
-      // console.log(vp);
       try {
         // Extract the 'issuer' from the VP. This may vary based on the structure of your VP
         const issuerAddress = vp.verifiableCredential[0].issuer; // adjust based on your actual VP structure
@@ -438,9 +318,9 @@ function verifyOrg() {
   reader.readAsText(vpFile);
 }
 
-function banDID() {
+function registerDID() {
   try {
-    const didInput = document.getElementById("blacklistedDID");
+    const didInput = document.getElementById("revokedDID");
     const did = didInput.value.trim();
 
     if (!did) {
@@ -449,33 +329,33 @@ function banDID() {
     }
 
     // Retrieve the existing blacklist from localStorage
-    const blacklistStr = localStorage.getItem("blacklist");
-    const blacklist = blacklistStr ? JSON.parse(blacklistStr) : [];
+    const crlStr = localStorage.getItem("blacklist");
+    const crl = crlStr ? JSON.parse(crlStr) : [];
 
-    // Check if the DID is already blacklisted
-    if (blacklist.includes(did)) {
-      alert("This DID is already blacklisted.");
+    // Check if the DID is already registered
+    if (crl.includes(did)) {
+      alert("This DID is already registered.");
       return;
     }
 
-    // Add the new DID to the blacklist
-    blacklist.push(did);
+    // Add the new DID to the crl
+    crl.push(did);
 
-    // Save the updated blacklist to localStorage
-    localStorage.setItem("blacklist", JSON.stringify(blacklist));
+    // Save the updated crl to localStorage
+    localStorage.setItem("blacklist", JSON.stringify(crl));
 
-    alert("DID successfully blacklisted!");
+    alert("DID successfully registered!");
     didInput.value = ""; // Clear the input field after successful action
   } catch (error) {
-    console.error("Error blacklisting DID: ", error);
-    alert("Could not blacklist the DID due to an unexpected error.");
+    console.error("Error registering DID: ", error);
+    alert("Could not register DID due to an unexpected error.");
   }
 }
 
 // Global variable to store the last verified DID
 let lastVerifiedDID = "";
 
-function verifyBlacklisted() {
+function verifyVP() {
   const jsonFileInput = document.getElementById("verifyInput");
 
   const uploadedFile = jsonFileInput.files[0];
@@ -505,14 +385,14 @@ function verifyBlacklisted() {
         lastVerifiedDID = did;
 
         // Retrieve the blacklist from localStorage
-        const blacklistStr = localStorage.getItem("blacklist");
-        const blacklist = blacklistStr ? JSON.parse(blacklistStr) : [];
+        const crlStr = localStorage.getItem("blacklist");
+        const crl = crlStr ? JSON.parse(crlStr) : [];
 
         // Check if the DID is in the blacklist
-        const isBlacklisted = blacklist.includes(did);
+        const isRevoked = crl.includes(did);
 
         // Reference the table and its body
-        const tableRef = document.getElementById("banResult");
+        const tableRef = document.getElementById("vpVerificationResult");
         const tbodyRef = tableRef.getElementsByTagName("tbody")[0];
 
         // Insert a row at the end of the table
@@ -524,10 +404,10 @@ function verifyBlacklisted() {
 
         // Append the text content
         cell1.textContent = did;
-        cell2.textContent = isBlacklisted ? "Invalid" : "Valid";
+        cell2.textContent = isRevoked ? "Invalid" : "Valid";
 
         // Optionally add style or class to the 'Invalid'/'Valid' text for better visualization
-        if (isBlacklisted) {
+        if (isRevoked) {
           cell2.classList.add("invalid-status"); // Define the 'invalid-status' class in your CSS
         } else {
           cell2.classList.add("valid-status"); // Define the 'valid-status' class in your CSS
@@ -541,6 +421,24 @@ function verifyBlacklisted() {
     }
   };
   reader.readAsText(uploadedFile);
+}
+
+function showPage(pageId) {
+  const pages = ["issueVC", "registerPage", "verifyVPPage", "createVPPage"];
+  for (let id of pages) {
+    if (id === pageId) {
+      document.getElementById(id).style.display = "block";
+      if (id === "register") {
+        if (!accounts || accounts.length === 0) {
+          alert("Please connect your Ethereum wallet first.");
+          return;
+        }
+        const ownerAddress = accounts[0];
+      }
+    } else {
+      document.getElementById(id).style.display = "none";
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {

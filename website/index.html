@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>VC Issuer</title>
+    <title>HYU DID</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.3.5/dist/web3.min.js"></script>
     <script src="app.js" defer></script>
@@ -12,12 +12,12 @@
 <body>
     <!-- Navigation Bar -->
     <div class="navbar">
-        <div class="title">HYU SBT</div>
+        <div class="title">HYU DID</div>
         <div class="menu">
             <a href="#issueVC">Issue VC</a>
             <a href="#register">Register</a>
-            <a href="#createVP">Make VP</a>
-            <a href="#verifyVP">Verify VP</a>
+            <a href="#createVP">Create VP</a>
+            <a href="#verifyVP">Verify</a>
         </div>
         <div id="walletInfo">
             <div id="connectedAddress"></div>
@@ -29,7 +29,7 @@
         <!-- Main Content for Issue VC -->
         <div class="main-content" id="issueVC">
             <div class="left-section">
-                <h1>VC ISSUER</h1>
+                <h1>ISSUE VC</h1>
                 <form id="vcForm">
                     <label for="name">Name:</label>
                     <input type="text" id="name" required>
@@ -43,37 +43,37 @@
                     <label for="receiverAddress">Receiver Address:</label>
                     <input type="text" id="receiverAddress" required>
 
-                    <button type="button" onclick="issueVC()">Issue VC</button>
+                    <button type="button" onclick="issueVC()">Issue</button>
                 </form>
             </div>
 
             <div class="right-section">
                 <h2>ISSUED VC</h2>
                 <textarea id="issuedVC" readonly></textarea>
-                <button id="downloadVC" onclick="downloadJSON()">Download VC</button>
+                <button id="downloadVC" onclick="downloadJSON()">Download</button>
             </div>
         </div>
 
         <div class="main-content" id="registerPage" style="display: none;">
-            <h1>Register</h1>
-            <h3>Register Org</h3>
+            <h1>REGISTER</h1>
+            <h3>Register Organization </h3>
             <input type="text" id="orgName" placeholder="Enter Organization Name">
-            <button id="orgButton" onclick="registerOrg()">Register Org</button>
-            <h3>Blacklist DID</h3>
-            <input type="text" id="blacklistedDID" placeholder="Enter DID Address">
-            <button id="banButton" onclick="banDID()">Ban DID</button>
+            <button id="orgButton" onclick="registerOrg()">Register</button>
+            <h3>Register CRL(Certificate Revocation List)</h3>
+            <input type="text" id="revokedDID" placeholder="Enter DID Address">
+            <button id="revokeButton" onclick="registerDID()">Register</button>
 
         </div>
 
         <div class="main-content" id="createVPPage" style="display: none;">
             <div class="left-section">
-                <h1>UPLOAD VC</h1>
+                <h1>CREATE VP</h1>
                 <form id="vpForm">
                     <label for="receiverAddress">Holder Address:</label>
                     <input type="text" id="holderAddress" required>
 
                     <input type="file" name="file" id="jsonFileInput" accept=".json">
-                    <button type="button" onclick="createVP()">Upload</button>
+                    <button type="button" onclick="createVP()">Create</button>
                     <button id="downloadButton" style="display: none;">Download</button>
                 </form>
 
@@ -81,16 +81,16 @@
         </div>
         <!-- Main Content for Verify -->
         <div class="main-content" id="verifyVPPage" style="display: none;">
-            <h1>Verify VP</h1>
+            <h1>VERIFY</h1>
             <input type="file" name="file" id="verifyInput" accept=".json">
             <!-- <button type="button" onclick="createVP()">Upload</button> -->
             <!-- <textarea id="vpTextArea" placeholder="Enter Received VP"></textarea> -->
             <button id="verifyOrgButton" onclick="verifyOrg()">Verify Org</button>
-            <button id="banButton" onclick="verifyBlacklisted()">Verify Blacklisted</button>
+            <button id="verifyVPButton" onclick="verifyVP()">Verify VP</button>
             <p>Issued By:
             <div id="orgVerificationResult"></div>
             </p>
-            <table id="banResult" border="1">
+            <table id="vpVerificationResult" border="1">
                 <thead>
                     <tr>
                         <th>DID</th>
